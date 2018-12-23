@@ -3,14 +3,12 @@ package revoluttransfer
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.db.Holder
 import java.math.BigDecimal
-import javax.persistence.Persistence
+import javax.persistence.EntityManager
 
-val factory = Persistence.createEntityManagerFactory("transfers")
-val manager get() = factory.createEntityManager()
 
-fun createTestEntities() {
-    val m = manager
-    m.transaction.begin()
+fun createTestEntities(manager: EntityManager) {
+
+    manager.transaction.begin()
     val account1 = Account(balance = BigDecimal(1000000), isDefault = true, number = 10101010)
     val account2 = Account(balance = BigDecimal(1000000), isDefault = false, number = 10101020)
     val account3 = Account(balance = BigDecimal(1000000), isDefault = false, number = 10101030)
@@ -28,17 +26,17 @@ fun createTestEntities() {
     val holder3 = Holder(name = "holder3", lastName = "H3", email = "h3@gmail.com", accounts = listOf(account6))
     val holder4 = Holder(name = "holder4", lastName = "H4", email = "h4@gmail.com", accounts = listOf(account7, account8))
 
-    m.persist(account1)
-    m.persist(account2)
-    m.persist(account3)
-    m.persist(account4)
-    m.persist(account5)
-    m.persist(account6)
-    m.persist(account7)
-    m.persist(account8)
-    m.persist(holder1)
-    m.persist(holder2)
-    m.persist(holder3)
-    m.persist(holder4)
-    m.transaction.commit()
+    manager.persist(account1)
+    manager.persist(account2)
+    manager.persist(account3)
+    manager.persist(account4)
+    manager.persist(account5)
+    manager.persist(account6)
+    manager.persist(account7)
+    manager.persist(account8)
+    manager.persist(holder1)
+    manager.persist(holder2)
+    manager.persist(holder3)
+    manager.persist(holder4)
+    manager.transaction.commit()
 }

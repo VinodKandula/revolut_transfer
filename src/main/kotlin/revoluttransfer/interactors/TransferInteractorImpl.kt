@@ -1,5 +1,6 @@
 package revoluttransfer.interactors
 
+import com.google.inject.Inject
 import revoluttransfer.models.OperationResult
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.dto.TransferDto
@@ -7,7 +8,7 @@ import revoluttransfer.repositories.account.AccountRepository
 import revoluttransfer.repositories.holder.HolderRepository
 import java.math.BigDecimal
 
-class TransferInteractorImpl(
+class TransferInteractorImpl @Inject constructor(
         private val accountRepository: AccountRepository,
         private val holderRepository: HolderRepository
 ) : TransferInteractor {

@@ -1,9 +1,10 @@
 package revoluttransfer.repositories.account
 
+import com.google.inject.Inject
 import revoluttransfer.models.db.Account
 import javax.persistence.EntityManager
 
-class AccountRepositoryImpl(private val entityManager: EntityManager) : AccountRepository {
+class AccountRepositoryImpl @Inject constructor(private val entityManager: EntityManager) : AccountRepository {
 
     override fun findByNumber(number: Long): Account {
         return entityManager

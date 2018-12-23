@@ -2,11 +2,11 @@ package revoluttransfer
 
 import com.google.gson.Gson
 import org.junit.Test
-import revoluttransfer.routes.transfer.TransferParamsValidator
+import revoluttransfer.routes.transfer.TransferParamsValidatorImpl
 
-class TransferParamsValidatorTest {
+class TransferParamsValidatorImplTest {
 
-    private val validator = TransferParamsValidator(Gson())
+    private val validator = TransferParamsValidatorImpl(Gson())
 
     @Test
     fun `unsuccess result if money ammount is less than 0`() {

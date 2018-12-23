@@ -1,12 +1,14 @@
 package revoluttransfer.routes.transfer
 
 import com.google.gson.Gson
+import com.google.inject.Inject
+import revoluttransfer.TRANSFER_PATH
 import revoluttransfer.interactors.TransferInteractor
 import revoluttransfer.models.ResponseDto
-import revoluttransfer.TRANSFER_PATH
 import spark.Spark.*
 
-class TransferRouter(
+class TransferRouter @Inject constructor(
+        private val gson: Gson,
         private val transferParamsValidator: TransferParamsValidator,
         private val transferInteractor: TransferInteractor
 ) {

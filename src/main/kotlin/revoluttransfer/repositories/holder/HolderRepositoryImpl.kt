@@ -1,9 +1,10 @@
 package revoluttransfer.repositories.holder
 
+import com.google.inject.Inject
 import revoluttransfer.models.db.Holder
 import javax.persistence.EntityManager
 
-class HolderRepositoryImpl(private val entityManager: EntityManager) : HolderRepository {
+class HolderRepositoryImpl @Inject constructor(private val entityManager: EntityManager) : HolderRepository {
 
     override fun getHolderByEmail(email: String): Holder {
         return entityManager
