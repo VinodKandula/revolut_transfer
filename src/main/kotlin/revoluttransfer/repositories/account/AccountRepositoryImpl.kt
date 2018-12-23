@@ -11,4 +11,11 @@ class AccountRepositoryImpl(private val entityManager: EntityManager) : AccountR
                 .setParameter("number", number)
                 .singleResult
     }
+
+    override fun saveAccountChanges(debitAccount: Account, creditAccount: Account) {
+        entityManager.transaction.begin()
+        entityManager.persist(debitAccount)
+        entityManager.persist(creditAccount)
+        entityManager.transaction.commit()
+    }
 }

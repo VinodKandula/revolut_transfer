@@ -49,6 +49,7 @@ class TransferInteractorImpl(
             if (debitAccount.balance > moneyToTransfer) {
                 debitAccount.balance = debitAccount.balance.minus(moneyToTransfer)
                 creditAccount.balance = creditAccount.balance.plus(moneyToTransfer)
+                accountRepository.saveAccountChanges(debitAccount, creditAccount)
                 OperationResult(true)
             } else {
                 OperationResult(isSuccess = false, failReason = "debited account have not enough money")
