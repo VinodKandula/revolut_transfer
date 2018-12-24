@@ -12,6 +12,7 @@ import revoluttransfer.repositories.holder.HolderRepositoryImpl
 import revoluttransfer.routes.transfer.TransferParamsValidator
 import revoluttransfer.routes.transfer.TransferParamsValidatorImpl
 import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
 import javax.persistence.Persistence
 
 class ApplicationModule : AbstractModule() {
@@ -26,5 +27,9 @@ class ApplicationModule : AbstractModule() {
 
     @Singleton
     @Provides
-    fun provideEntityManager(): EntityManager = Persistence.createEntityManagerFactory("transfers").createEntityManager()
+    fun provideEntityManager(factory: EntityManagerFactory): EntityManager = factory.createEntityManager()
+
+    @Singleton
+    @Provides
+    fun provideEntityManagerFactory() = Persistence.createEntityManagerFactory("transfers")
 }

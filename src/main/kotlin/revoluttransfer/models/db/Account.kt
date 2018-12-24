@@ -10,5 +10,6 @@ data class Account(
         @GeneratedValue(strategy = GenerationType.AUTO) @Id val id: UUID? = null,
         var balance: BigDecimal,
         val isDefault: Boolean,
-        val number: Long
+        val number: Long,
+        @Version var version: Int? = null
 )

@@ -9,5 +9,6 @@ data class Holder(
         val email: String,
         val name: String,
         val lastName: String,
-        @OneToMany val accounts: List<Account> = emptyList()
+        @OneToMany val accounts: List<Account> = emptyList(),
+        @Version var version: Int? = null
 )

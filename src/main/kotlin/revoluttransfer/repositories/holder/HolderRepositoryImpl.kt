@@ -11,5 +11,8 @@ class HolderRepositoryImpl @Inject constructor(private val entityManager: Entity
                 .createQuery("select h from Holder h where h.email = :email", Holder::class.java)
                 .setParameter("email", email)
                 .singleResult
+                .apply {
+                    entityManager.detach(this)
+                }
     }
 }

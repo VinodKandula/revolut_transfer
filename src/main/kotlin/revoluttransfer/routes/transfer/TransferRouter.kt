@@ -1,14 +1,13 @@
 package revoluttransfer.routes.transfer
 
-import com.google.gson.Gson
 import com.google.inject.Inject
 import revoluttransfer.TRANSFER_PATH
 import revoluttransfer.interactors.TransferInteractor
-import revoluttransfer.models.ResponseDto
+import revoluttransfer.utils.ResponseInflator
 import spark.Spark.*
 
 class TransferRouter @Inject constructor(
-        private val gson: Gson,
+        private val responseInflator: ResponseInflator,
         private val transferParamsValidator: TransferParamsValidator,
         private val transferInteractor: TransferInteractor
 ) {
@@ -16,53 +15,24 @@ class TransferRouter @Inject constructor(
     fun register() {
 
         post(TRANSFER_PATH) { request, response ->
-            System.out.println("TransferRouter with body" + request.body())
             val paramsValidationResult = transferParamsValidator.validateAndGet(request.body())
-            System.out.println("TransferRouter validagted")
             if (paramsValidationResult.isSuccess && paramsValidationResult.data != null) {
-                System.out.println("TransferRouter start interactor")
                 val transferResult = transferInteractor.commitTransfer(paramsValidationResult.data)
                 if (transferResult.isSuccess) {
-                    response.status(200)
-                    return@post Gson().toJson(
-                            ResponseDto(
-                                    code = 200,
-                                    resason = "transfer was committed successfully"
-                            ),
-                            ResponseDto::class.java
-                    )
+                    return@post responseInflator.inflateResponseWithResult(response, 200, transferResult)
                 } else {
-                    response.status(400)
-                    return@post Gson().toJson(
-                            ResponseDto(
-                                    code = 400,
-                                    resason = transferResult.failReason ?: "transfer wasn\'t committed successfully"
-                            ),
-                            ResponseDto::class.java
-                    )
-                }
+                    return@post responseInflator.inflateResponseWithResult(response, 400, transferResult)
 
+                }
             } else {
-                response.status(400)
-                return@post Gson().toJson(
-                        ResponseDto(
-                                code = 418,
-                                resason = paramsValidationResult.failReason ?: "something when wrong"
-                        ),
-                        ResponseDto::class.java
-                )
+                return@post responseInflator.inflateResponseWithResult(response, 400, paramsValidationResult)
             }
         }
-        after(TRANSFER_PATH) { request, response -> response.header("Content-Type", "application/json") }
+
+        after(TRANSFER_PATH) { _, response -> response.header("Content-Type", "application/json") }
+
         exception(Exception::class.java) { exception, _, response ->
-            exception.printStackTrace()
-            response.body(Gson().toJson(
-                    ResponseDto(
-                            code = 400,
-                            resason = exception.localizedMessage
-                    ),
-                    ResponseDto::class.java
-            ))
+            responseInflator.inflateResponseWithException(response, exception)
         }
     }
 

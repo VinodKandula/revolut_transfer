@@ -19,7 +19,7 @@ class TransferParamsValidatorImpl @Inject constructor(private val gson: Gson) : 
         } catch (ex: JsonSyntaxException) {
             return OperationResult(
                     isSuccess = false,
-                    failReason = ex.localizedMessage
+                    reason = ex.localizedMessage
             )
         }
         val moneyToTransfer = try {
@@ -27,26 +27,26 @@ class TransferParamsValidatorImpl @Inject constructor(private val gson: Gson) : 
         } catch (ex: NumberFormatException) {
             return OperationResult(
                     isSuccess = false,
-                    failReason = ex.localizedMessage
+                    reason = ex.localizedMessage
             )
         }
         return when {
             transferDto.creditHolderEmail == null && transferDto.creditAccountNumber == null -> OperationResult(
                     isSuccess = false,
-                    failReason = "data for credited client wasn\'t provided"
+                    reason = "data for credited client wasn\'t provided"
             )
             transferDto.creditHolderEmail != null && !pattern.matcher(transferDto.creditHolderEmail).matches() -> OperationResult(
                     isSuccess = false,
-                    failReason = "email is wrong"
+                    reason = "email is wrong"
             )
             transferDto.debitAccountNumber == transferDto.creditAccountNumber -> OperationResult(
                     isSuccess = false,
-                    failReason = "debitAccountNumber is equal to creditAccountNumber"
+                    reason = "debitAccountNumber is equal to creditAccountNumber"
             )
             moneyToTransfer < BigDecimal.ZERO -> {
                 OperationResult(
                         isSuccess = false,
-                        failReason = "money amount can\'t be less than zero "
+                        reason = "money amount can\'t be less than zero "
                 )
             }
             else -> OperationResult(
