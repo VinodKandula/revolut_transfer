@@ -1,6 +1,7 @@
 package revoluttransfer.interactors
 
 import com.google.inject.Inject
+import revoluttransfer.TRANSACTIONS_RETRY
 import revoluttransfer.models.OperationResult
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.dto.TransferDto
@@ -33,8 +34,11 @@ class TransferInteractorImpl @Inject constructor(
     private fun transferByAccountNumber(debitAccountNumber: Long, creditAccountNumber: Long, moneyToTransfer: BigDecimal): OperationResult<Unit> {
         val creditAccount = accountRepository.findByNumber(creditAccountNumber)
         val debitAccount = accountRepository.findByNumber(debitAccountNumber)
-        val result = processTransaction(debitAccount, creditAccount, moneyToTransfer)
-        return result
+        return if (creditAccount == null || debitAccount == null) {
+            OperationResult(isSuccess = false, reason = "one of accounts wasn't found")
+        } else {
+            processTransaction(debitAccount, creditAccount, moneyToTransfer)
+        }
     }
 
     private fun transferByEmail(debitAccountNumber: Long, creditHolderEmail: String, moneyToTransfer: BigDecimal): OperationResult<Unit> {
@@ -42,33 +46,39 @@ class TransferInteractorImpl @Inject constructor(
         return if (creditedHolder.accounts.none { it.number == debitAccountNumber }) {
             val creditAccount = creditedHolder.accounts.first { it.isDefault }
             val debitAccount = accountRepository.findByNumber(debitAccountNumber)
-            processTransaction(debitAccount, creditAccount, moneyToTransfer)
+            if (debitAccount != null) {
+                processTransaction(debitAccount, creditAccount, moneyToTransfer)
+            } else {
+                OperationResult(isSuccess = false, reason = "debitAccount is null")
+            }
         } else {
             OperationResult(isSuccess = false, reason = "credited email is the same as debited number holder")
         }
     }
 
     private fun processTransaction(debitAccount: Account, creditAccount: Account, moneyToTransfer: BigDecimal): OperationResult<Unit> {
-        for (i in 1..3) {
+        for (i in 1..TRANSACTIONS_RETRY) {
             val updatedDebitAccount = accountRepository.findByNumber(debitAccount.number)
             val updatedCreditAccount = accountRepository.findByNumber(creditAccount.number)
-            val result = applyMoneyTransaction(updatedDebitAccount, updatedCreditAccount, moneyToTransfer)
-            when {
-                result.isSuccess -> return OperationResult(isSuccess = true, reason = "transfer was committed successfully")
-                !result.isSuccess && result.data == TransactionCodeResult.NOT_ENOUGH_MONEY -> return OperationResult(
-                        isSuccess = false,
-                        reason = result.reason
-                )
+            if (updatedCreditAccount != null && updatedDebitAccount != null) {
+                val result = applyMoneyTransaction(updatedDebitAccount, updatedCreditAccount, moneyToTransfer)
+                when {
+                    result.isSuccess -> return OperationResult(isSuccess = true, reason = "transfer was committed successfully current balace: ${updatedDebitAccount.balance}")
+                    !result.isSuccess && result.data == TransactionCodeResult.NOT_ENOUGH_MONEY -> return OperationResult(
+                            isSuccess = false,
+                            reason = result.reason
+                    )
+                }
             }
         }
-        return OperationResult(isSuccess =  false, reason =  "BAD BAD")
+        return OperationResult(isSuccess = false, reason = "transfer wasn't commited")
     }
 
     private fun applyMoneyTransaction(debitAccount: Account, creditAccount: Account, moneyToTransfer: BigDecimal): OperationResult<TransactionCodeResult> {
         return if (debitAccount.balance > moneyToTransfer) {
-            debitAccount.balance = debitAccount.balance.minus(moneyToTransfer)
-            creditAccount.balance = creditAccount.balance.plus(moneyToTransfer)
             try {
+                debitAccount.balance = debitAccount.balance.minus(moneyToTransfer)
+                creditAccount.balance = creditAccount.balance.plus(moneyToTransfer)
                 accountRepository.saveAccountChanges(debitAccount, creditAccount)
                 OperationResult(true, TransactionCodeResult.SUCCESS)
             } catch (ex: RollbackException) {

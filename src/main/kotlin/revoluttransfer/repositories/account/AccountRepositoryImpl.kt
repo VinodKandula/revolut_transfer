@@ -10,13 +10,14 @@ class AccountRepositoryImpl @Inject constructor(private val entityManager: Entit
 
     private var lock = ReentrantLock()
 
-    override fun findByNumber(number: Long): Account {
+    override fun findByNumber(number: Long): Account? {
         lock.withLock {
-        return entityManager
-                .createQuery("select a from Account a where a.number = :number", Account::class.java)
-                .setParameter("number", number)
-                .singleResult
-                .copy()
+            return entityManager
+                    .createQuery("select a from Account a where a.number = :number", Account::class.java)
+                    .setParameter("number", number)
+                    .resultStream
+                    .findFirst()
+                    .orElse(null)
         }
     }
 
