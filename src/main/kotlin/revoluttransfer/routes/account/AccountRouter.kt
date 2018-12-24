@@ -10,13 +10,8 @@ class AccountRouter(interactor: AccountInteractor) {
     fun register() {
 
         path(ACCOUNTS_PATH) {
-            get("/") { request, response ->
-
-            }
-
-            get("/:accountId") { request, response ->
-
-            }
+            get("/") { request, response -> }
+            get("/:accountId") { request, response -> }
         }
     }
 }
