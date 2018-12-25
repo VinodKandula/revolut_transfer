@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {1..1000}
+for i in {1..100}
 do
-curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '100', debitAccountNumber: '10101010', creditAccountNumber: '10101040' }" -v
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '100', debitAccountNumber: '10101010', creditAccountNumber: '10101040' }" -v &
 done
