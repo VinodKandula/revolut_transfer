@@ -82,8 +82,10 @@ class TransferInteractorImpl @Inject constructor(
                 accountRepository.saveAccountChanges(debitAccount, creditAccount)
                 OperationResult(true, TransactionCodeResult.SUCCESS)
             } catch (ex: RollbackException) {
+                System.out.println("Rollback")
                 OperationResult(false, data = TransactionCodeResult.ROLLBACK_CONFLICT, reason = "transaction update conflict")
             } catch (ex: OptimisticLockException) {
+                System.out.println("OptimisticLockException")
                 OperationResult(false, data = TransactionCodeResult.UPDATE_CONFLICT, reason = "transaction update conflict")
             }
         } else {
