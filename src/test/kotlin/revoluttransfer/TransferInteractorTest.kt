@@ -7,11 +7,12 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.stubbing.OngoingStubbing
-import revoluttransfer.interactors.TransferInteractorImpl
+import revoluttransfer.interactors.transfer.TransferInteractorImpl
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.db.Holder
 import revoluttransfer.models.dto.TransferDto
 import revoluttransfer.repositories.account.AccountRepository
+import revoluttransfer.repositories.account.TransactionCodeResult
 import revoluttransfer.repositories.holder.HolderRepository
 
 fun <T> whenever(methodCall: T): OngoingStubbing<T> = Mockito.`when`(methodCall)!!
@@ -66,8 +67,11 @@ class TransferInteractorTest {
                 debitAccountNumber = 1,
                 creditAccountNumber = 2
         )
-        whenever(accountRepository.findByNumber(1)).thenReturn(Account(null, "2000".toBigDecimal(), true, 1))
-        whenever(accountRepository.findByNumber(2)).thenReturn(Account(null, "20".toBigDecimal(), true, 2))
+        val account1 = Account(null, "2000".toBigDecimal(), true, 1)
+        val account2 = Account(null, "20".toBigDecimal(), true, 2)
+        whenever(accountRepository.findByNumber(1)).thenReturn(account1)
+        whenever(accountRepository.findByNumber(2)).thenReturn(account2)
+        whenever(accountRepository.saveAccountChanges(account1, account2)).thenReturn(TransactionCodeResult.SUCCESS)
         val result = interactor.commitTransfer(testTransferDto)
         assert(result.isSuccess)
     }
@@ -83,8 +87,11 @@ class TransferInteractorTest {
                 creditHolderEmail = email
         )
         val testAccount = Account(null, "2000".toBigDecimal(), true, 10)
+        val account2 = Account(null, "20".toBigDecimal(), true, creditAccount)
         whenever(accountRepository.findByNumber(10L)).thenReturn(testAccount)
-        whenever(holderRepository.getHolderByEmail(email)).thenReturn(Holder(email = email, name = "", lastName = "", accounts = listOf(Account(null, "20".toBigDecimal(), true, creditAccount))))
+        whenever(accountRepository.findByNumber(20L)).thenReturn(account2)
+        whenever(holderRepository.getHolderByEmail(email)).thenReturn(Holder(email = email, name = "", lastName = "", accounts = listOf(account2)))
+        whenever(accountRepository.saveAccountChanges(testAccount, account2)).thenReturn(TransactionCodeResult.SUCCESS)
         val result = interactor.commitTransfer(testTransferDto)
         assert(result.isSuccess)
     }

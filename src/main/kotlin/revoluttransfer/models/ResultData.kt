@@ -1,6 +1,6 @@
 package revoluttransfer.models
 
-data class OperationResult<T>(
+data class ResultData<T>(
         val isSuccess: Boolean,
         val data: T? = null,
         val reason: String? = null

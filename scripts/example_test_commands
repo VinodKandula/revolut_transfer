@@ -1,0 +1,27 @@
+
+
+Cases:
+normal
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '100', debitAccountNumber: '10101010', creditAccountNumber: '10101040' }" -v
+
+normal to my own account
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '100', debitAccountNumber: '10101010', creditAccountNumber: '10101020' }" -v
+
+
+less than 0
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '-100', debitAccountNumber: '10101010', creditAccountNumber: '10101040' }" -v
+
+the same account
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '100', debitAccountNumber: '10101010', creditAccountNumber: '10101010' }" -v
+
+the money is bigger than amount
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '1000000000', debitAccountNumber: '10101010', creditAccountNumber: '10101040' }" -v
+
+tranfer by email
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '100', debitAccountNumber: '10101010', creditHolderEmail: 'h2@gmail.com' }" -v
+
+tranfer by email to my own email
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '100', debitAccountNumber: '10101010', creditHolderEmail: 'h2@gmail.com' }" -v
+
+tranfer with bad email
+curl -X POST localhost:8888/v1/transfer --data "{ moneyAmount: '100', debitAccountNumber: '10101010', creditHolderEmail: 'h2@gmail....com' }" -v

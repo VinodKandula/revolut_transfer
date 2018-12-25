@@ -1,9 +1,13 @@
 package revoluttransfer.models.db
 
+import revoluttransfer.models.dto.HolderDto
 import javax.persistence.*
 
 @Entity
-@Table(name = "Holders")
+@Table(
+        name = "Holders",
+        indexes = [Index(name = "email", columnList = "email", unique = true)]
+)
 data class Holder(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: Long = 0,
         val email: String,
@@ -12,3 +16,5 @@ data class Holder(
         @OneToMany val accounts: List<Account> = emptyList(),
         @Version var version: Int? = null
 )
+
+fun Holder.toDto() = HolderDto(email, name, lastName, accounts.map { it.toDto() })

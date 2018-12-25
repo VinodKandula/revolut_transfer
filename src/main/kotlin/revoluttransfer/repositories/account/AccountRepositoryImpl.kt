@@ -2,7 +2,6 @@ package revoluttransfer.repositories.account
 
 import com.google.inject.Inject
 import revoluttransfer.models.db.Account
-import java.util.concurrent.Semaphore
 import java.util.concurrent.locks.ReentrantLock
 import javax.persistence.EntityManager
 import javax.persistence.OptimisticLockException
@@ -10,19 +9,18 @@ import kotlin.concurrent.withLock
 
 class AccountRepositoryImpl @Inject constructor(private val entityManager: EntityManager) : AccountRepository {
 
-    private var lock = ReentrantLock()
+    private val lock = ReentrantLock()
 
     override fun findByNumber(number: Long): Account? {
         println("Thread name ${Thread.currentThread().id}")
         lock.withLock {
-            val result = entityManager
+            return entityManager
                     .createQuery("select a from Account a where a.number = :number", Account::class.java)
                     .setParameter("number", number)
                     .resultStream
                     .findFirst()
                     .map { it.copy() }
                     .orElse(null)
-            return result
         }
     }
 
@@ -34,7 +32,7 @@ class AccountRepositoryImpl @Inject constructor(private val entityManager: Entit
             entityManager.merge(creditAccount)
             entityManager.transaction.commit()
         } catch (ex: OptimisticLockException) {
-            System.out.println("Catch optimistic lock")
+            println("Catch optimistic lock")
             entityManager.transaction.rollback()
             return TransactionCodeResult.UPDATE_CONFLICT
         } catch (ex: Exception) {
@@ -42,7 +40,7 @@ class AccountRepositoryImpl @Inject constructor(private val entityManager: Entit
             entityManager.transaction.rollback()
             return TransactionCodeResult.UNKNOWN
         } finally {
-            System.out.println("release")
+            println("release")
             lock.unlock()
         }
         return TransactionCodeResult.SUCCESS
