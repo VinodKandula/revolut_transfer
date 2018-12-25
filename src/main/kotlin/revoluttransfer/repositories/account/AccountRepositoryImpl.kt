@@ -2,6 +2,7 @@ package revoluttransfer.repositories.account
 
 import com.google.inject.Inject
 import revoluttransfer.models.db.Account
+import java.util.concurrent.Semaphore
 import java.util.concurrent.locks.ReentrantLock
 import javax.persistence.EntityManager
 import javax.persistence.OptimisticLockException
