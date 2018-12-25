@@ -31,39 +31,27 @@ class TransferInteractorImpl @Inject constructor(
         }
     }
 
-    private fun transferByAccountNumber(debitAccountNumber: Long, creditAccountNumber: Long, moneyToTransfer: BigDecimal): OperationResult<Unit> {
-        val creditAccount = accountRepository.findByNumber(creditAccountNumber)
-        val debitAccount = accountRepository.findByNumber(debitAccountNumber)
-        return if (creditAccount == null || debitAccount == null) {
-            OperationResult(isSuccess = false, reason = "one of accounts wasn't found")
-        } else {
-            processTransaction(debitAccount, creditAccount, moneyToTransfer)
-        }
-    }
+    private fun transferByAccountNumber(debitAccountNumber: Long, creditAccountNumber: Long, moneyToTransfer: BigDecimal): OperationResult<Unit> =
+            processTransaction(debitAccountNumber, creditAccountNumber, moneyToTransfer)
 
     private fun transferByEmail(debitAccountNumber: Long, creditHolderEmail: String, moneyToTransfer: BigDecimal): OperationResult<Unit> {
-        val creditedHolder = holderRepository.getHolderByEmail(creditHolderEmail)
+        val creditedHolder = holderRepository.getHolderByEmail(creditHolderEmail).copy()
         return if (creditedHolder.accounts.none { it.number == debitAccountNumber }) {
             val creditAccount = creditedHolder.accounts.first { it.isDefault }
-            val debitAccount = accountRepository.findByNumber(debitAccountNumber)
-            if (debitAccount != null) {
-                processTransaction(debitAccount, creditAccount, moneyToTransfer)
-            } else {
-                OperationResult(isSuccess = false, reason = "debitAccount is null")
-            }
+            processTransaction(debitAccountNumber, creditAccount.number, moneyToTransfer)
         } else {
             OperationResult(isSuccess = false, reason = "credited email is the same as debited number holder")
         }
     }
 
-    private fun processTransaction(debitAccount: Account, creditAccount: Account, moneyToTransfer: BigDecimal): OperationResult<Unit> {
+    private fun processTransaction(debitAccountNumber: Long, creditAccountNumber: Long, moneyToTransfer: BigDecimal): OperationResult<Unit> {
         for (i in 1..TRANSACTIONS_RETRY) {
-            val updatedDebitAccount = accountRepository.findByNumber(debitAccount.number)
-            val updatedCreditAccount = accountRepository.findByNumber(creditAccount.number)
-            if (updatedCreditAccount != null && updatedDebitAccount != null) {
-                val result = applyMoneyTransaction(updatedDebitAccount, updatedCreditAccount, moneyToTransfer)
+            val debitAccount = accountRepository.findByNumber(debitAccountNumber)
+            val creditAccount = accountRepository.findByNumber(creditAccountNumber)
+            if (creditAccount != null && debitAccount != null) {
+                val result = applyMoneyTransaction(debitAccount, creditAccount, moneyToTransfer)
                 when {
-                    result.isSuccess -> return OperationResult(isSuccess = true, reason = "transfer was committed successfully current balace: ${updatedDebitAccount.balance}")
+                    result.isSuccess -> return OperationResult(isSuccess = true, reason = "transfer was committed successfully current balace: ${debitAccount.balance}")
                     !result.isSuccess && result.data == TransactionCodeResult.NOT_ENOUGH_MONEY -> return OperationResult(
                             isSuccess = false,
                             reason = result.reason
@@ -71,7 +59,7 @@ class TransferInteractorImpl @Inject constructor(
                 }
             }
         }
-        return OperationResult(isSuccess = false, reason = "transfer wasn't commited")
+        return OperationResult(isSuccess = false, reason = "transfer wasn't committed")
     }
 
     private fun applyMoneyTransaction(debitAccount: Account, creditAccount: Account, moneyToTransfer: BigDecimal): OperationResult<TransactionCodeResult> {
