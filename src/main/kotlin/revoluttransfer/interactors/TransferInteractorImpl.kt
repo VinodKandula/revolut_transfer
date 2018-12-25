@@ -6,10 +6,9 @@ import revoluttransfer.models.OperationResult
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.dto.TransferDto
 import revoluttransfer.repositories.account.AccountRepository
+import revoluttransfer.repositories.account.TransactionCodeResult
 import revoluttransfer.repositories.holder.HolderRepository
 import java.math.BigDecimal
-import javax.persistence.OptimisticLockException
-import javax.persistence.RollbackException
 
 class TransferInteractorImpl @Inject constructor(
         private val accountRepository: AccountRepository,
@@ -50,34 +49,27 @@ class TransferInteractorImpl @Inject constructor(
             val creditAccount = accountRepository.findByNumber(creditAccountNumber)
             if (creditAccount != null && debitAccount != null) {
                 val result = applyMoneyTransaction(debitAccount, creditAccount, moneyToTransfer)
-                when {
-                    result.isSuccess -> return OperationResult(isSuccess = true, reason = "transfer was committed successfully current balace: ${debitAccount.balance}")
-                    !result.isSuccess && result.data == TransactionCodeResult.NOT_ENOUGH_MONEY -> return OperationResult(
+                when (result) {
+                    TransactionCodeResult.SUCCESS -> return OperationResult(isSuccess = true, reason = "transfer was committed successfully current balance: ${debitAccount.balance}")
+                    TransactionCodeResult.NOT_ENOUGH_MONEY -> return OperationResult(
                             isSuccess = false,
-                            reason = result.reason
+                            reason = "Not enough money"
                     )
+                    else -> {
+                    }
                 }
             }
         }
-        return OperationResult(isSuccess = false, reason = "transfer wasn't committed")
+        return OperationResult(isSuccess = false, reason = "transfer was not committed")
     }
 
-    private fun applyMoneyTransaction(debitAccount: Account, creditAccount: Account, moneyToTransfer: BigDecimal): OperationResult<TransactionCodeResult> {
+    private fun applyMoneyTransaction(debitAccount: Account, creditAccount: Account, moneyToTransfer: BigDecimal): TransactionCodeResult {
         return if (debitAccount.balance > moneyToTransfer) {
-            try {
-                debitAccount.balance = debitAccount.balance.minus(moneyToTransfer)
-                creditAccount.balance = creditAccount.balance.plus(moneyToTransfer)
-                accountRepository.saveAccountChanges(debitAccount, creditAccount)
-                OperationResult(true, TransactionCodeResult.SUCCESS)
-            } catch (ex: RollbackException) {
-                System.out.println("Rollback")
-                OperationResult(false, data = TransactionCodeResult.ROLLBACK_CONFLICT, reason = "transaction update conflict")
-            } catch (ex: OptimisticLockException) {
-                System.out.println("OptimisticLockException")
-                OperationResult(false, data = TransactionCodeResult.UPDATE_CONFLICT, reason = "transaction update conflict")
-            }
+            debitAccount.balance = debitAccount.balance.minus(moneyToTransfer)
+            creditAccount.balance = creditAccount.balance.plus(moneyToTransfer)
+            accountRepository.saveAccountChanges(debitAccount, creditAccount)
         } else {
-            OperationResult(isSuccess = false, data = TransactionCodeResult.NOT_ENOUGH_MONEY, reason = "debited account have not enough money")
+            TransactionCodeResult.NOT_ENOUGH_MONEY
         }
     }
 }

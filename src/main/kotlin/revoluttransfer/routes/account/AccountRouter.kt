@@ -1,7 +1,7 @@
 package revoluttransfer.routes.account
 
-import revoluttransfer.ACCOUNTS_PATH
 import revoluttransfer.interactors.AccountInteractor
+import revoluttransfer.routes.ACCOUNTS_PATH
 import spark.Spark.get
 import spark.Spark.path
 

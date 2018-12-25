@@ -1,6 +1,5 @@
 package revoluttransfer.interactors
 
-import revoluttransfer.models.db.Holder
 import revoluttransfer.repositories.holder.HolderRepository
 
 interface HolderInteractor {

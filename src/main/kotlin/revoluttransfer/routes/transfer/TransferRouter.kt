@@ -1,8 +1,8 @@
 package revoluttransfer.routes.transfer
 
 import com.google.inject.Inject
-import revoluttransfer.TRANSFER_PATH
 import revoluttransfer.interactors.TransferInteractor
+import revoluttransfer.routes.TRANSFER_PATH
 import revoluttransfer.utils.ResponseInflator
 import spark.Spark.*
 
@@ -22,7 +22,6 @@ class TransferRouter @Inject constructor(
                     return@post responseInflator.inflateResponseWithResult(response, 200, transferResult)
                 } else {
                     return@post responseInflator.inflateResponseWithResult(response, 400, transferResult)
-
                 }
             } else {
                 return@post responseInflator.inflateResponseWithResult(response, 400, paramsValidationResult)

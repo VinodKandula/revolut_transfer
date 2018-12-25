@@ -1,4 +1,4 @@
-package revoluttransfer.interactors
+package revoluttransfer.repositories.account
 
 enum class TransactionCodeResult {
     NOT_ENOUGH_MONEY,

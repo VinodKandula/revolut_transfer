@@ -3,6 +3,7 @@ package revoluttransfer.di
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.google.inject.Singleton
+import revoluttransfer.PERSISTNECE_NAME
 import revoluttransfer.interactors.TransferInteractor
 import revoluttransfer.interactors.TransferInteractorImpl
 import revoluttransfer.repositories.account.AccountRepository
@@ -18,11 +19,10 @@ import javax.persistence.Persistence
 class ApplicationModule : AbstractModule() {
 
     override fun configure() {
-//        bind(EntityManager::class.java).toInstance(provideEntityManager())
-        bind(TransferParamsValidator::class.java).to(TransferParamsValidatorImpl::class.java)
-        bind(HolderRepository::class.java).to(HolderRepositoryImpl::class.java)
-        bind(AccountRepository::class.java).to(AccountRepositoryImpl::class.java)
-        bind(TransferInteractor::class.java).to(TransferInteractorImpl::class.java)
+        bind(TransferParamsValidator::class.java).to(TransferParamsValidatorImpl::class.java).asEagerSingleton()
+        bind(HolderRepository::class.java).to(HolderRepositoryImpl::class.java).asEagerSingleton()
+        bind(AccountRepository::class.java).to(AccountRepositoryImpl::class.java).asEagerSingleton()
+        bind(TransferInteractor::class.java).to(TransferInteractorImpl::class.java).asEagerSingleton()
     }
 
     @Singleton
@@ -31,5 +31,5 @@ class ApplicationModule : AbstractModule() {
 
     @Singleton
     @Provides
-    fun provideEntityManagerFactory() = Persistence.createEntityManagerFactory("transfers")
+    fun provideEntityManagerFactory() = Persistence.createEntityManagerFactory(PERSISTNECE_NAME)
 }
