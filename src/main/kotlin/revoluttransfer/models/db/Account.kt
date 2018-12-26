@@ -12,10 +12,26 @@ import javax.persistence.*
 )
 data class Account(
         @GeneratedValue(strategy = GenerationType.AUTO) @Id val id: UUID? = null,
-        var balance: BigDecimal,
+        val balance: BigDecimal,
         val isDefault: Boolean,
         val number: Long,
-        @Version var version: Int? = null
+        @Version val version: Int = 0
+)
+
+fun Account.minus(money: BigDecimal) = this.copy(
+        id = this.id,
+        isDefault = this.isDefault,
+        number = this.number,
+        version = this.version,
+        balance = this.balance.minus(money)
+)
+
+fun Account.plus(money: BigDecimal) = this.copy(
+        id = this.id,
+        isDefault = this.isDefault,
+        number = this.number,
+        version = this.version,
+        balance = this.balance.plus(money)
 )
 
 fun Account.toDto() = AccountDto(balance, isDefault, number)

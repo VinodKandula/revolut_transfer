@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class LocalMapAccountRepository : AccountRepository {
+class LocalMapAccountRepositoryImpl : AccountRepository {
 
     private val lock = ReentrantLock()
 
@@ -39,6 +39,7 @@ class LocalMapAccountRepository : AccountRepository {
             return if (cacheDebitAccount?.version == debitAccount.version && cacheCreditAccount?.version == creditAccount.version) {
                 map[debitAccount.number] = debitAccount.copy(version = debitAccount.version + 1)
                 map[creditAccount.number] = creditAccount.copy(version = creditAccount.version + 1)
+                println("Success transaction")
                 TransactionCodeResult.SUCCESS
             } else {
                 println("Catch optimistic lock")

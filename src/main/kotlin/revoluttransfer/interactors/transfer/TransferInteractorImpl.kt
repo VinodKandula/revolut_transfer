@@ -4,6 +4,8 @@ import com.google.inject.Inject
 import revoluttransfer.TRANSACTIONS_RETRY
 import revoluttransfer.models.ResultData
 import revoluttransfer.models.db.Account
+import revoluttransfer.models.db.minus
+import revoluttransfer.models.db.plus
 import revoluttransfer.models.dto.TransferDto
 import revoluttransfer.repositories.account.AccountRepository
 import revoluttransfer.repositories.account.TransactionCodeResult
@@ -70,9 +72,7 @@ class TransferInteractorImpl @Inject constructor(
 
     private fun applyMoneyTransaction(debitAccount: Account, creditAccount: Account, moneyToTransfer: BigDecimal): TransactionCodeResult {
         return if (debitAccount.balance > moneyToTransfer) {
-            debitAccount.balance = debitAccount.balance.minus(moneyToTransfer)
-            creditAccount.balance = creditAccount.balance.plus(moneyToTransfer)
-            accountRepository.saveAccountChanges(debitAccount, creditAccount)
+            accountRepository.saveAccountChanges(debitAccount.minus(moneyToTransfer), creditAccount.plus(moneyToTransfer))
         } else {
             TransactionCodeResult.NOT_ENOUGH_MONEY
         }

@@ -5,13 +5,12 @@ import revoluttransfer.createTestEntities
 import revoluttransfer.di.ApplicationModule
 import revoluttransfer.routes.holder.HolderRouter
 import revoluttransfer.routes.transfer.TransferRouter
-import spark.Spark
 import javax.persistence.EntityManager
 
 class AppRouterResolver {
 
-    fun registerAppRoutes() {
-        val injector = Guice.createInjector(ApplicationModule())
+    fun registerAppRoutes(isDbMode: Boolean = true) {
+        val injector = Guice.createInjector(ApplicationModule(isDbMode))
         createTestEntities(injector.getInstance(EntityManager::class.java))
         injector.getInstance(TransferRouter::class.java).register()
         injector.getInstance(HolderRouter::class.java).register()

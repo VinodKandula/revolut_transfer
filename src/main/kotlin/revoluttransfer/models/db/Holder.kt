@@ -14,7 +14,7 @@ data class Holder(
         val name: String,
         val lastName: String,
         @OneToMany val accounts: List<Account> = emptyList(),
-        @Version var version: Int? = null
+        @Version val version: Int = 0
 )
 
 fun Holder.toDto() = HolderDto(email, name, lastName, accounts.map { it.toDto() })

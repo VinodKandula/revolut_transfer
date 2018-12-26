@@ -10,10 +10,13 @@ import org.mockito.stubbing.OngoingStubbing
 import revoluttransfer.interactors.transfer.TransferInteractorImpl
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.db.Holder
+import revoluttransfer.models.db.minus
+import revoluttransfer.models.db.plus
 import revoluttransfer.models.dto.TransferDto
 import revoluttransfer.repositories.account.AccountRepository
 import revoluttransfer.repositories.account.TransactionCodeResult
 import revoluttransfer.repositories.holder.HolderRepository
+import java.math.BigDecimal
 
 fun <T> whenever(methodCall: T): OngoingStubbing<T> = Mockito.`when`(methodCall)!!
 
@@ -62,8 +65,10 @@ class TransferInteractorTest {
 
     @Test
     fun `success if transfer with proper balance`() {
+        val rawMoneyToTransfer = "20"
+        val transferMoney = BigDecimal(rawMoneyToTransfer)
         val testTransferDto = TransferDto(
-                moneyAmount = "1000",
+                moneyAmount = rawMoneyToTransfer,
                 debitAccountNumber = 1,
                 creditAccountNumber = 2
         )
@@ -71,7 +76,7 @@ class TransferInteractorTest {
         val account2 = Account(null, "20".toBigDecimal(), true, 2)
         whenever(accountRepository.findByNumber(1)).thenReturn(account1)
         whenever(accountRepository.findByNumber(2)).thenReturn(account2)
-        whenever(accountRepository.saveAccountChanges(account1, account2)).thenReturn(TransactionCodeResult.SUCCESS)
+        whenever(accountRepository.saveAccountChanges(account1.minus(transferMoney), account2.plus(transferMoney))).thenReturn(TransactionCodeResult.SUCCESS)
         val result = interactor.commitTransfer(testTransferDto)
         assert(result.isSuccess)
     }
@@ -81,8 +86,10 @@ class TransferInteractorTest {
         val email = "email@e.com"
         val debitAccount = 10L
         val creditAccount = 20L
+        val rawMoneyToTransfer = "20"
+        val transferMoney = BigDecimal(rawMoneyToTransfer)
         val testTransferDto = TransferDto(
-                moneyAmount = "1000",
+                moneyAmount = rawMoneyToTransfer,
                 debitAccountNumber = debitAccount,
                 creditHolderEmail = email
         )
@@ -91,7 +98,7 @@ class TransferInteractorTest {
         whenever(accountRepository.findByNumber(10L)).thenReturn(testAccount)
         whenever(accountRepository.findByNumber(20L)).thenReturn(account2)
         whenever(holderRepository.getHolderByEmail(email)).thenReturn(Holder(email = email, name = "", lastName = "", accounts = listOf(account2)))
-        whenever(accountRepository.saveAccountChanges(testAccount, account2)).thenReturn(TransactionCodeResult.SUCCESS)
+        whenever(accountRepository.saveAccountChanges(testAccount.minus(transferMoney), account2.plus(transferMoney))).thenReturn(TransactionCodeResult.SUCCESS)
         val result = interactor.commitTransfer(testTransferDto)
         assert(result.isSuccess)
     }
