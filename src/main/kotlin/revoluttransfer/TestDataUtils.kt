@@ -6,8 +6,7 @@ import java.math.BigDecimal
 import javax.persistence.EntityManager
 
 
-fun createTestEntities(manager: EntityManager) {
-
+fun createTestDbEntities(manager: EntityManager) {
     manager.transaction.begin()
     val accounts = createTestAccountList()
     val holders = createTestHolders(accounts)

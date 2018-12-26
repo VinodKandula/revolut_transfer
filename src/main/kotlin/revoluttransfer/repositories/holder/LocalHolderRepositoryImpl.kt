@@ -1,20 +1,12 @@
 package revoluttransfer.repositories.holder
 
-import revoluttransfer.createTestAccountList
-import revoluttransfer.createTestHolders
 import revoluttransfer.models.db.Holder
 import java.util.concurrent.ConcurrentHashMap
 
-class LocalHolderRepositoryImpl : HolderRepository {
+class LocalHolderRepositoryImpl(private val dataSet: ConcurrentHashMap.KeySetView<Holder, Boolean>) : HolderRepository {
 
-    private val map = ConcurrentHashMap.newKeySet<Holder>().apply {
-        createTestHolders(createTestAccountList()).forEach {
-            add(it)
-        }
-    }
+    override fun getHolderByEmail(email: String): Holder? = dataSet.first { it.email == email }
 
-    override fun getHolderByEmail(email: String): Holder? = map.first { it.email == email }
-
-    override fun getAll() = map.toList()
+    override fun getAll() = dataSet.toList()
 
 }
