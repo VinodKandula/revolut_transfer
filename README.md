@@ -26,5 +26,5 @@ In project you can useful test script for testing api and text file with example
 
 P.S. DI in application is extremly simple because of small count of classes so I decided to construct all dependencies in one module
 Also there are to types of repositories one is based on JPA and H2 database and another is a simple inmemory cache.
-You can swich between them by providing param to main as "db"
+You can swich between them by providing param to main as "db".
 I tried to implement optimistic locking apporach.
