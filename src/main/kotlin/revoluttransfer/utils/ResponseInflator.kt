@@ -1,7 +1,6 @@
 package revoluttransfer.utils
 
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.google.inject.Inject
 import revoluttransfer.models.ErrorResponseDto
 import revoluttransfer.models.ResponseDto

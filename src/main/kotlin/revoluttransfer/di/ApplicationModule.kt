@@ -4,14 +4,12 @@ import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.google.inject.Singleton
 import revoluttransfer.PERSISTNECE_NAME
-import revoluttransfer.createTestAccountList
-import revoluttransfer.createTestHolders
+import revoluttransfer.createConcurrentKeySet
+import revoluttransfer.createConcurrentMapAccounts
 import revoluttransfer.interactors.holder.HolderInteractor
 import revoluttransfer.interactors.holder.HolderInteractorImpl
 import revoluttransfer.interactors.transfer.TransferInteractor
 import revoluttransfer.interactors.transfer.TransferInteractorImpl
-import revoluttransfer.models.db.Account
-import revoluttransfer.models.db.Holder
 import revoluttransfer.repositories.account.AccountRepository
 import revoluttransfer.repositories.account.AccountRepositoryImpl
 import revoluttransfer.repositories.account.LocalMapAccountRepositoryImpl
@@ -22,7 +20,6 @@ import revoluttransfer.routes.holder.HolderParamsValidator
 import revoluttransfer.routes.holder.HolderParamsValidatorImpl
 import revoluttransfer.routes.transfer.TransferParamsValidator
 import revoluttransfer.routes.transfer.TransferParamsValidatorImpl
-import java.util.concurrent.ConcurrentHashMap
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.Persistence
@@ -37,19 +34,8 @@ class ApplicationModule(private val isDbMode: Boolean = false) : AbstractModule(
             bind(HolderRepository::class.java).to(HolderRepositoryImpl::class.java).asEagerSingleton()
             bind(AccountRepository::class.java).to(AccountRepositoryImpl::class.java).asEagerSingleton()
         } else {
-            bind(HolderRepository::class.java).toInstance(
-                    LocalHolderRepositoryImpl(
-                            dataSet = ConcurrentHashMap.newKeySet<Holder>().apply {
-                                createTestHolders(createTestAccountList()).forEach {
-                                    add(it)
-                                }
-                            }))
-            bind(AccountRepository::class.java).toInstance(LocalMapAccountRepositoryImpl(
-                    dataSet = ConcurrentHashMap<Long, Account>().apply {
-                        createTestAccountList().forEach {
-                            put(it.number, it)
-                        }
-                    }))
+            bind(HolderRepository::class.java).toInstance(LocalHolderRepositoryImpl(createConcurrentKeySet()))
+            bind(AccountRepository::class.java).toInstance(LocalMapAccountRepositoryImpl(createConcurrentMapAccounts()))
         }
         bind(HolderParamsValidator::class.java).to(HolderParamsValidatorImpl::class.java).asEagerSingleton()
         bind(TransferParamsValidator::class.java).to(TransferParamsValidatorImpl::class.java).asEagerSingleton()

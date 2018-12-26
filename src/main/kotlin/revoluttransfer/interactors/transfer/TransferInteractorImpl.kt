@@ -67,13 +67,15 @@ class TransferInteractorImpl @Inject constructor(
                 }
             }
         }
+        println("unsuccess transaction result after optimistic tries")
         return ResultData(isSuccess = false, reason = "transfer was not committed")
     }
 
     private fun applyMoneyTransaction(debitAccount: Account, creditAccount: Account, moneyToTransfer: BigDecimal): TransactionCodeResult {
-        return if (debitAccount.balance > moneyToTransfer) {
+        return if (debitAccount.balance >= moneyToTransfer) {
             accountRepository.saveAccountChanges(debitAccount.minus(moneyToTransfer), creditAccount.plus(moneyToTransfer))
         } else {
+            println("not enough money")
             TransactionCodeResult.NOT_ENOUGH_MONEY
         }
     }

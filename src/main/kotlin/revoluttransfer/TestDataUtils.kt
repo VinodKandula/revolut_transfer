@@ -3,6 +3,7 @@ package revoluttransfer
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.db.Holder
 import java.math.BigDecimal
+import java.util.concurrent.ConcurrentHashMap
 import javax.persistence.EntityManager
 
 
@@ -23,6 +24,18 @@ fun createTestDbEntities(manager: EntityManager) {
     manager.persist(holders[2])
     manager.persist(holders[3])
     manager.transaction.commit()
+}
+
+fun createConcurrentKeySet() = ConcurrentHashMap.newKeySet<Holder>().apply {
+    createTestHolders(createTestAccountList()).forEach {
+        add(it)
+    }
+}
+
+fun createConcurrentMapAccounts() = ConcurrentHashMap<Long, Account>().apply {
+    createTestAccountList().forEach {
+        put(it.number, it)
+    }
 }
 
 fun createTestHolders(accounts: List<Account>): List<Holder> {

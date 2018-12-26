@@ -5,7 +5,8 @@ import revoluttransfer.interactors.transfer.TransferInteractor
 import revoluttransfer.routes.Router
 import revoluttransfer.routes.TRANSFER_PATH
 import revoluttransfer.utils.ResponseInflator
-import spark.Spark.*
+import spark.Spark.after
+import spark.Spark.post
 
 class TransferRouter @Inject constructor(
         private val responseInflator: ResponseInflator,

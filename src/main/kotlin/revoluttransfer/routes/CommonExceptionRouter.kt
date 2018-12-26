@@ -1,7 +1,6 @@
 package revoluttransfer.routes
 
 import revoluttransfer.utils.ResponseInflator
-import spark.Spark
 import spark.Spark.exception
 import javax.inject.Inject
 
