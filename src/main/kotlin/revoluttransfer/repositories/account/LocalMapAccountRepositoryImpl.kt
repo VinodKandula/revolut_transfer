@@ -1,6 +1,7 @@
 package revoluttransfer.repositories.account
 
 import revoluttransfer.models.db.Account
+import revoluttransfer.models.db.incrementVersion
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -16,10 +17,8 @@ class LocalMapAccountRepositoryImpl(private val dataSet: ConcurrentHashMap<Long,
             val cacheDebitAccount = dataSet[debitAccount.number]
             val cacheCreditAccount = dataSet[creditAccount.number]
             return if (cacheDebitAccount?.version == debitAccount.version && cacheCreditAccount?.version == creditAccount.version) {
-                dataSet[debitAccount.number] = debitAccount.copy(
-                        version = debitAccount.version + 1
-                )
-                dataSet[creditAccount.number] = creditAccount.copy(version = creditAccount.version + 1)
+                dataSet[debitAccount.number] = debitAccount.incrementVersion()
+                dataSet[creditAccount.number] = creditAccount.incrementVersion()
                 println("Success transaction")
                 TransactionCodeResult.SUCCESS
             } else {

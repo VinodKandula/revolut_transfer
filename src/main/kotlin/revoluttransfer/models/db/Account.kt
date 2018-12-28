@@ -34,4 +34,12 @@ fun Account.plus(money: BigDecimal) = this.copy(
         balance = this.balance.plus(money)
 )
 
+fun Account.incrementVersion() = this.copy(
+        id = this.id,
+        isDefault = this.isDefault,
+        number = this.number,
+        version = this.version + 1,
+        balance = this.balance
+)
+
 fun Account.toDto() = AccountDto(balance, isDefault, number)
