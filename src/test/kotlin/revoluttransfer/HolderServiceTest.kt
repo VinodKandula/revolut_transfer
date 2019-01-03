@@ -5,23 +5,23 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import revoluttransfer.interactors.holder.HolderInteractorImpl
+import revoluttransfer.interactors.holder.HolderServiceImpl
 import revoluttransfer.models.db.Holder
 import revoluttransfer.models.dto.HolderDto
 import revoluttransfer.repositories.holder.HolderRepository
 
 
 @RunWith(MockitoJUnitRunner::class)
-class HolderInteractorTest {
+class HolderServiceTest {
 
     @Mock
     private lateinit var repository: HolderRepository
 
-    private lateinit var holderInteractor: HolderInteractorImpl
+    private lateinit var holderInteractor: HolderServiceImpl
 
     @Before
     fun setUp() {
-        holderInteractor = HolderInteractorImpl(repository)
+        holderInteractor = HolderServiceImpl(repository)
     }
 
     @Test

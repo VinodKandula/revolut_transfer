@@ -1,13 +1,13 @@
 package revoluttransfer.routes
 
-import revoluttransfer.utils.ResponseInflator
+import revoluttransfer.utils.ResponseConstructor
 import spark.Spark.exception
 import javax.inject.Inject
 
-class CommonExceptionRouter @Inject constructor(private val responseInflator: ResponseInflator) : Router {
+class CommonExceptionRouter @Inject constructor(private val responseConstructor: ResponseConstructor) : Router {
     override fun register() {
         exception(Exception::class.java) { exception, _, response ->
-            responseInflator.inflateErrorResponseWithException(response, exception)
+            responseConstructor.inflateErrorResponseWithException(response, exception)
         }
     }
 }

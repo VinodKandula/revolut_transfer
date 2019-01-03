@@ -6,7 +6,7 @@ import revoluttransfer.models.dto.HolderDto
 import revoluttransfer.repositories.holder.HolderRepository
 import javax.inject.Inject
 
-class HolderInteractorImpl @Inject constructor(private val holderRepository: HolderRepository) : HolderInteractor {
+class HolderServiceImpl @Inject constructor(private val holderRepository: HolderRepository) : HolderService {
 
     override fun getAllHolders(): ResultData<List<HolderDto>> =
             ResultData(

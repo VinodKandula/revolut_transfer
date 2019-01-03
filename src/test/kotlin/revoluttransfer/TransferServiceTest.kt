@@ -7,7 +7,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.stubbing.OngoingStubbing
-import revoluttransfer.interactors.transfer.TransferInteractorImpl
+import revoluttransfer.interactors.transfer.TransferServiceImpl
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.db.Holder
 import revoluttransfer.models.db.minus
@@ -21,7 +21,7 @@ import java.math.BigDecimal
 fun <T> whenever(methodCall: T): OngoingStubbing<T> = Mockito.`when`(methodCall)!!
 
 @RunWith(MockitoJUnitRunner::class)
-class TransferInteractorTest {
+class TransferServiceTest {
 
     @Mock
     private lateinit var accountRepository: AccountRepository
@@ -29,11 +29,11 @@ class TransferInteractorTest {
     @Mock
     private lateinit var holderRepository: HolderRepository
 
-    private lateinit var interactor: TransferInteractorImpl
+    private lateinit var interactor: TransferServiceImpl
 
     @Before
     fun setUp() {
-        interactor = TransferInteractorImpl(accountRepository, holderRepository)
+        interactor = TransferServiceImpl(accountRepository, holderRepository)
     }
 
     @Test

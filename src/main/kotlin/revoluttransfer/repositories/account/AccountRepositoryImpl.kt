@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-class LocalMapAccountRepositoryImpl(private val dataSet: ConcurrentHashMap<Long, Account>) : AccountRepository {
+class AccountRepositoryImpl(private val dataSet: ConcurrentHashMap<Long, Account>) : AccountRepository {
 
     private val lock = ReentrantLock()
 

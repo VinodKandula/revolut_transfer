@@ -7,7 +7,7 @@ import revoluttransfer.models.ResponseDto
 import revoluttransfer.models.ResultData
 import spark.Response
 
-class ResponseInflator @Inject constructor(private val gson: Gson) {
+class ResponseConstructor @Inject constructor(private val gson: Gson) {
 
     fun <T> inflateResponseWithResult(response: Response, resultData: ResultData<T>) {
         response.status(200)

@@ -3,7 +3,7 @@ package revoluttransfer.interactors.holder
 import revoluttransfer.models.ResultData
 import revoluttransfer.models.dto.HolderDto
 
-interface HolderInteractor {
+interface HolderService {
 
     fun getAllHolders(): ResultData<List<HolderDto>>
 

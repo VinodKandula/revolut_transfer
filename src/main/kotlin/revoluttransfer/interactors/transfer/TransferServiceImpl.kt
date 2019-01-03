@@ -12,10 +12,10 @@ import revoluttransfer.repositories.account.TransactionCodeResult
 import revoluttransfer.repositories.holder.HolderRepository
 import java.math.BigDecimal
 
-class TransferInteractorImpl @Inject constructor(
+class TransferServiceImpl @Inject constructor(
         private val accountRepository: AccountRepository,
         private val holderRepository: HolderRepository
-) : TransferInteractor {
+) : TransferService {
 
     override fun commitTransfer(transferDto: TransferDto): ResultData<Unit> {
         val moneyToTransfer = BigDecimal(transferDto.moneyAmount)

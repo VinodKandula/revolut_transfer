@@ -9,18 +9,18 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import revoluttransfer.interactors.transfer.TransferInteractorImpl
+import revoluttransfer.interactors.transfer.TransferServiceImpl
 import revoluttransfer.models.db.Account
 import revoluttransfer.models.dto.TransferDto
-import revoluttransfer.repositories.account.LocalMapAccountRepositoryImpl
+import revoluttransfer.repositories.account.AccountRepositoryImpl
 import revoluttransfer.repositories.holder.HolderRepository
 import java.math.BigDecimal
 
 
 @RunWith(MockitoJUnitRunner::class)
-class MultipleThreadTestTransferInteractorTest {
+class MultipleThreadTestTransferServiceTest {
     
-    val accountRepository = LocalMapAccountRepositoryImpl(createConcurrentMapAccounts().apply {
+    val accountRepository = AccountRepositoryImpl(createConcurrentMapAccounts().apply {
         put(1, Account(
                 balance = BigDecimal(200),
                 isDefault = true,
@@ -39,11 +39,11 @@ class MultipleThreadTestTransferInteractorTest {
     @Mock
     private lateinit var holderRepository: HolderRepository
 
-    private lateinit var interactor: TransferInteractorImpl
+    private lateinit var interactor: TransferServiceImpl
 
     @Before
     fun setUp() {
-        interactor = TransferInteractorImpl(accountRepository, holderRepository)
+        interactor = TransferServiceImpl(accountRepository, holderRepository)
     }
 
     @ObsoleteCoroutinesApi
