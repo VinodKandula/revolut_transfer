@@ -1,9 +1,7 @@
 package revoluttransfer.repositories.account
 
 enum class TransactionCodeResult {
-    NOT_ENOUGH_MONEY,
+    ONGOING_TRANSACTION_IN_PROCESS,
     UPDATE_CONFLICT,
-    ROLLBACK_CONFLICT,
-    UNKNOWN,
     SUCCESS
 }

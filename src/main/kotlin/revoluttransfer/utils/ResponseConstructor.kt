@@ -7,9 +7,9 @@ import revoluttransfer.models.ResponseDto
 import revoluttransfer.models.ResultData
 import spark.Response
 
-class ResponseInflator @Inject constructor(private val gson: Gson) {
+class ResponseConstructor @Inject constructor(private val gson: Gson) {
 
-    fun <T> inflateResponseWithResult(response: Response, resultData: ResultData<T>) {
+    fun <T> constructResponseWithResult(response: Response, resultData: ResultData<T>) {
         response.status(200)
         response.body(gson.toJson(
                 ResponseDto(
@@ -21,8 +21,7 @@ class ResponseInflator @Inject constructor(private val gson: Gson) {
     }
 
 
-
-    fun <T> inflateErrorResponseWithResult(response: Response, code: Int, resultData: ResultData<T>) {
+    fun <T> constructErrorResponseWithResult(response: Response, code: Int, resultData: ResultData<T>) {
         response.status(code)
         response.body(gson.toJson(
                 ErrorResponseDto(
@@ -33,7 +32,7 @@ class ResponseInflator @Inject constructor(private val gson: Gson) {
         ))
     }
 
-    fun inflateErrorResponseWithException(response: Response, exception: Exception) {
+    fun constructErrorResponseWithException(response: Response, exception: Exception) {
         exception.printStackTrace()
         response.status(400)
         response.body(gson.toJson(

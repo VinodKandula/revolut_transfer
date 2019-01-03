@@ -1,9 +1,9 @@
-package revoluttransfer.interactors.transfer
+package revoluttransfer.services.transfer
 
 import revoluttransfer.models.ResultData
 import revoluttransfer.models.dto.TransferDto
 
-interface TransferInteractor {
+interface TransferService {
     fun commitTransfer(transferDto: TransferDto): ResultData<Unit>
 
 }

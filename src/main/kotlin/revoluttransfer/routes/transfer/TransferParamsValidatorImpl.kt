@@ -3,15 +3,11 @@ package revoluttransfer.routes.transfer
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.inject.Inject
-import revoluttransfer.EMAIL_REGEX
 import revoluttransfer.models.ResultData
 import revoluttransfer.models.dto.TransferDto
 import java.math.BigDecimal
-import java.util.regex.Pattern
 
 class TransferParamsValidatorImpl @Inject constructor(private val gson: Gson) : TransferParamsValidator {
-
-    private val pattern by lazy { Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE) }
 
     override fun validateAndGet(body: String): ResultData<TransferDto> {
         val transferDto = try {
@@ -31,14 +27,6 @@ class TransferParamsValidatorImpl @Inject constructor(private val gson: Gson) : 
             )
         }
         return when {
-            transferDto.creditHolderEmail == null && transferDto.creditAccountNumber == null -> ResultData(
-                    isSuccess = false,
-                    reason = "data for credited client wasn\'t provided"
-            )
-            transferDto.creditHolderEmail != null && !pattern.matcher(transferDto.creditHolderEmail).matches() -> ResultData(
-                    isSuccess = false,
-                    reason = "email is wrong"
-            )
             transferDto.debitAccountNumber == transferDto.creditAccountNumber -> ResultData(
                     isSuccess = false,
                     reason = "debitAccountNumber is equal to creditAccountNumber"
