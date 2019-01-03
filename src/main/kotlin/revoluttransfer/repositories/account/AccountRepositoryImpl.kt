@@ -33,7 +33,6 @@ class AccountRepositoryImpl(private val dataSet: ConcurrentHashMap<Long, Account
     }
 
     private fun dropProgressOrThrow() {
-//        isTransactionInProgress.set(false)
         if (!isTransactionInProgress.compareAndSet(true, false)) {
             throw IllegalStateException("Storage is not consistent")
         }

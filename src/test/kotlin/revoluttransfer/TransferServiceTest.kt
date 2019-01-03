@@ -38,8 +38,8 @@ class TransferServiceTest {
                 debitAccountNumber = 1,
                 creditAccountNumber = 2
         )
-        whenever(accountRepository.findByNumber(1)).thenReturn(Account(null, "20".toBigDecimal(), true, 1))
-        whenever(accountRepository.findByNumber(2)).thenReturn(Account(null, "20".toBigDecimal(), true, 2))
+        whenever(accountRepository.findByNumber(1)).thenReturn(Account("20".toBigDecimal(), true, 1))
+        whenever(accountRepository.findByNumber(2)).thenReturn(Account("20".toBigDecimal(), true, 2))
         val result = interactor.commitTransfer(testTransferDto)
         assert(!result.isSuccess)
     }
@@ -53,8 +53,8 @@ class TransferServiceTest {
                 debitAccountNumber = 1,
                 creditAccountNumber = 2
         )
-        val account1 = Account(null, "2000".toBigDecimal(), true, 1)
-        val account2 = Account(null, "20".toBigDecimal(), true, 2)
+        val account1 = Account("2000".toBigDecimal(), true, 1)
+        val account2 = Account("20".toBigDecimal(), true, 2)
         whenever(accountRepository.findByNumber(1)).thenReturn(account1)
         whenever(accountRepository.findByNumber(2)).thenReturn(account2)
         whenever(accountRepository.saveAccountChanges(account1.minus(transferMoney), account2.plus(transferMoney))).thenReturn(TransactionCodeResult.SUCCESS)

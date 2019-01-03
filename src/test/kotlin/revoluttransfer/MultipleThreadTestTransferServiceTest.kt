@@ -46,7 +46,7 @@ class MultipleThreadTestTransferServiceTest {
     }
 
     @Test
-    fun `transfer from 1 account to 2`() {
+    fun `concurrent transfers from 1 account to 2`() {
         val lostTransactionCount = AtomicInteger(0)
         val latch = CountDownLatch(200)
         val executor1 = Executors.newFixedThreadPool(20)
@@ -71,12 +71,69 @@ class MultipleThreadTestTransferServiceTest {
         val balance2 = ac2.balance
         println("balance1 $balance1")
         println("balance2 $balance2")
+        if (lostTransactionCount.get() != 0) {
+            assert(balance1 == 10.toBigDecimal().multiply(lostTransactionCount.get().toBigDecimal()))
+        }
         assert(balance1.plus(balance2) == BigDecimal(4000))
         assert(ac1.version == ac2.version)
     }
 
     @Test
-    fun `transfer from 1 account to 2 account and from 2 to 3 account`() {
+    fun `concurrent transfers from 1 account to 2 account and from 3 to 2 account`() {
+        val lostTransactionCount = AtomicInteger(0)
+        val latch = CountDownLatch(400)
+        val executor1 = Executors.newFixedThreadPool(20)
+        val executor2 = Executors.newFixedThreadPool(20)
+        for (i in 0 until 200) {
+            executor1.execute {
+                val result = interactor.commitTransfer(TransferDto(
+                        moneyAmount = "10",
+                        debitAccountNumber = 1,
+                        creditAccountNumber = 2
+
+                ))
+                if (!result.isSuccess) {
+                    lostTransactionCount.incrementAndGet()
+                }
+                latch.countDown()
+            }
+            executor2.execute {
+                val result = interactor.commitTransfer(TransferDto(
+                        moneyAmount = "10",
+                        debitAccountNumber = 3,
+                        creditAccountNumber = 2
+
+                ))
+                if (!result.isSuccess) {
+                    lostTransactionCount.incrementAndGet()
+                }
+                latch.countDown()
+            }
+        }
+        latch.await()
+        val ac1 = accountRepository.findByNumber(1)!!
+        val ac2 = accountRepository.findByNumber(2)!!
+        val ac3 = accountRepository.findByNumber(3)!!
+        val balance1 = ac1.balance
+        val balance2 = ac2.balance
+        val balance3 = ac3.balance
+        println("ver1 ${ac1.version}")
+        println("ver2 ${ac2.version}")
+        println("ver3 ${ac3.version}")
+        println("balance1 $balance1")
+        println("balance2 $balance2")
+        println("balance3 $balance3")
+        println("lost attemps ${lostTransactionCount.get()}")
+        if (lostTransactionCount.get() == 0) {
+            assert(ac1.balance == 0.toBigDecimal())
+            assert(ac2.balance == 6000.toBigDecimal())
+            assert(ac3.balance == 0.toBigDecimal())
+        }
+        assert(balance1.plus(balance2).plus(balance3) == BigDecimal(6000))
+    }
+
+    @Test
+    fun `concurrent transfers from 1 account to 2 account and from 2 to 3 account`() {
         val lostTransactionCount = AtomicInteger(0)
         val latch = CountDownLatch(400)
         val executor1 = Executors.newFixedThreadPool(20)
@@ -127,7 +184,7 @@ class MultipleThreadTestTransferServiceTest {
     }
 
     @Test
-    fun `transfer from 1 account to 2 account and from 2 to 3 and from 3 to 1`() {
+    fun `concurrent transfers from 1 account to 2 account and from 2 to 3 and from 3 to 1`() {
         val lostTransactionCount = AtomicInteger(0)
         val latch = CountDownLatch(600)
         val executor1 = Executors.newFixedThreadPool(20)
@@ -191,7 +248,7 @@ class MultipleThreadTestTransferServiceTest {
     }
 
     @Test
-    fun `transfer from 1 account to 2 account amount of money bigger than 1 account have`() {
+    fun `concurrent transfers from 1 account to 2 account if amount of money bigger than 1 account have`() {
         val lostTransactionCount = AtomicInteger(0)
         val notEnoughMoneyAttempts = AtomicInteger(0)
         val latch = CountDownLatch(400)

@@ -13,15 +13,7 @@ import java.math.BigDecimal
 class TransferServiceImpl @Inject constructor(private val accountRepository: AccountRepository) : TransferService {
 
     override fun commitTransfer(transferDto: TransferDto): ResultData<Unit> {
-        val moneyToTransfer = BigDecimal(transferDto.moneyAmount)
-        return when {
-            transferDto.creditAccountNumber != null && transferDto.creditHolderEmail == null ->
-                processTransaction(transferDto.debitAccountNumber, transferDto.creditAccountNumber.toLong(), moneyToTransfer)
-            else -> ResultData(
-                    isSuccess = false,
-                    reason = "something wrong with input params"
-            )
-        }
+        return processTransaction(transferDto.debitAccountNumber, transferDto.creditAccountNumber, transferDto.moneyAmount.toBigDecimal())
     }
 
     private fun processTransaction(debitedAccountNumber: Long, creditedAccountNumber: Long, moneyToTransfer: BigDecimal): ResultData<Unit> {

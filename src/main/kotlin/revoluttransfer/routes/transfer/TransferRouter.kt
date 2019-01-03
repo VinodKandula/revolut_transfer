@@ -21,15 +21,15 @@ class TransferRouter @Inject constructor(
             if (paramsValidationResult.isSuccess && paramsValidationResult.data != null) {
                 val transferResult = transferService.commitTransfer(paramsValidationResult.data)
                 if (transferResult.isSuccess) {
-                    return@post responseConstructor.inflateResponseWithResult(
+                    return@post responseConstructor.constructResponseWithResult(
                             response = response,
                             resultData = transferResult
                     )
                 } else {
-                    return@post responseConstructor.inflateErrorResponseWithResult(response, 400, transferResult)
+                    return@post responseConstructor.constructErrorResponseWithResult(response, 400, transferResult)
                 }
             } else {
-                return@post responseConstructor.inflateErrorResponseWithResult(response, 400, paramsValidationResult)
+                return@post responseConstructor.constructErrorResponseWithResult(response, 400, paramsValidationResult)
             }
         }
 
