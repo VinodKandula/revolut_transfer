@@ -1,6 +1,6 @@
 package revoluttransfer.routes.holder
 
-import revoluttransfer.interactors.holder.HolderService
+import revoluttransfer.services.holder.HolderService
 import revoluttransfer.routes.HOLDER_PATH
 import revoluttransfer.routes.Router
 import revoluttransfer.utils.ResponseConstructor

@@ -7,25 +7,6 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.persistence.EntityManager
 
 
-fun createTestDbEntities(manager: EntityManager) {
-    manager.transaction.begin()
-    val accounts = createTestAccountList()
-    val holders = createTestHolders(accounts)
-    manager.persist(accounts[0])
-    manager.persist(accounts[1])
-    manager.persist(accounts[2])
-    manager.persist(accounts[3])
-    manager.persist(accounts[4])
-    manager.persist(accounts[5])
-    manager.persist(accounts[6])
-    manager.persist(accounts[7])
-    manager.persist(holders[0])
-    manager.persist(holders[1])
-    manager.persist(holders[2])
-    manager.persist(holders[3])
-    manager.transaction.commit()
-}
-
 fun createConcurrentKeySet() = ConcurrentHashMap.newKeySet<Holder>().apply {
     createTestHolders(createTestAccountList()).forEach {
         add(it)

@@ -1,4 +1,4 @@
-package revoluttransfer.interactors.transfer
+package revoluttransfer.services.transfer
 
 import revoluttransfer.models.ResultData
 import revoluttransfer.models.dto.TransferDto

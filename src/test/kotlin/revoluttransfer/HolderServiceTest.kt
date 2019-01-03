@@ -5,7 +5,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
-import revoluttransfer.interactors.holder.HolderServiceImpl
+import revoluttransfer.services.holder.HolderServiceImpl
 import revoluttransfer.models.db.Holder
 import revoluttransfer.models.dto.HolderDto
 import revoluttransfer.repositories.holder.HolderRepository

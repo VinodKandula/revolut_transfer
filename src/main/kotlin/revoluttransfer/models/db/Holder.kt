@@ -3,11 +3,6 @@ package revoluttransfer.models.db
 import revoluttransfer.models.dto.HolderDto
 import javax.persistence.*
 
-@Entity
-@Table(
-        name = "Holders",
-        indexes = [Index(name = "email", columnList = "email", unique = true)]
-)
 data class Holder(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: Long = 0,
         val email: String,

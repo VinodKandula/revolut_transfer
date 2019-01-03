@@ -3,10 +3,10 @@ package revoluttransfer.di
 import com.google.inject.AbstractModule
 import revoluttransfer.createConcurrentKeySet
 import revoluttransfer.createConcurrentMapAccounts
-import revoluttransfer.interactors.holder.HolderService
-import revoluttransfer.interactors.holder.HolderServiceImpl
-import revoluttransfer.interactors.transfer.TransferService
-import revoluttransfer.interactors.transfer.TransferServiceImpl
+import revoluttransfer.services.holder.HolderService
+import revoluttransfer.services.holder.HolderServiceImpl
+import revoluttransfer.services.transfer.TransferService
+import revoluttransfer.services.transfer.TransferServiceImpl
 import revoluttransfer.repositories.account.AccountRepository
 import revoluttransfer.repositories.account.AccountRepositoryImpl
 import revoluttransfer.repositories.holder.HolderRepository

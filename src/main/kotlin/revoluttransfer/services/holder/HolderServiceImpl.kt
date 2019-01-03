@@ -1,4 +1,4 @@
-package revoluttransfer.interactors.holder
+package revoluttransfer.services.holder
 
 import revoluttransfer.models.ResultData
 import revoluttransfer.models.db.toDto

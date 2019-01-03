@@ -1,7 +1,7 @@
 package revoluttransfer.routes.transfer
 
 import com.google.inject.Inject
-import revoluttransfer.interactors.transfer.TransferService
+import revoluttransfer.services.transfer.TransferService
 import revoluttransfer.routes.Router
 import revoluttransfer.routes.TRANSFER_PATH
 import revoluttransfer.utils.ResponseConstructor
