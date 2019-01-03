@@ -21,7 +21,6 @@ class ResponseInflator @Inject constructor(private val gson: Gson) {
     }
 
 
-
     fun <T> inflateErrorResponseWithResult(response: Response, code: Int, resultData: ResultData<T>) {
         response.status(code)
         response.body(gson.toJson(

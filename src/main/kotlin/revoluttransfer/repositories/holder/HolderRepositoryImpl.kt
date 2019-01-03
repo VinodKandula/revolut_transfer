@@ -1,23 +1,12 @@
 package revoluttransfer.repositories.holder
 
-import com.google.inject.Inject
 import revoluttransfer.models.db.Holder
-import javax.persistence.EntityManager
+import java.util.concurrent.ConcurrentHashMap
 
-class HolderRepositoryImpl @Inject constructor(private val entityManager: EntityManager) : HolderRepository {
+class LocalHolderRepositoryImpl(private val dataSet: ConcurrentHashMap.KeySetView<Holder, Boolean>) : HolderRepository {
 
-    override fun getHolderByEmail(email: String): Holder? {
-        return entityManager
-                .createQuery("select h from Holder h where h.email = :email", Holder::class.java)
-                .setParameter("email", email)
-                .resultStream
-                .map { it.copy() }
-                .findFirst()
-                .orElse(null)
+    override fun getHolderByEmail(email: String): Holder? = dataSet.first { it.email == email }
 
-    }
+    override fun getAll() = dataSet.toList()
 
-    override fun getAll(): List<Holder>? {
-        return entityManager.createQuery("from Holder", Holder::class.java).resultList
-    }
 }
